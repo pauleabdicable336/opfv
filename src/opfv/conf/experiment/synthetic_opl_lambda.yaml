@@ -1,0 +1,3 @@
+# @package _global_
+name: synthetic_opl_lambda
+sweep: lambda

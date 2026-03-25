@@ -1,7 +1,7 @@
 <h1 align="center"><b>OPFV</b><br>Future off-policy evaluation & learning under non-stationarity</h1>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/python-%3E%3D3.8-blue" alt="Python" />
+  <img src="https://img.shields.io/badge/python-%3E%3D3.12-blue" alt="Python" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-526EAF.svg?logo=opensourceinitiative&logoColor=white" alt="License: MIT" /></a>
   <a href="https://github.com/st-tech/zr-obp"><img src="https://img.shields.io/badge/stack-OBP-111111.svg" alt="Open Bandit Pipeline" /></a>
   <a href="https://dl.acm.org/doi/abs/10.1145/3690624.3709237"><img src="https://img.shields.io/badge/paper-ACM-CC4141.svg" alt="ACM Digital Library" /></a>
@@ -18,83 +18,99 @@ Research code for **[Off-Policy Evaluation and Learning for the Future under Non
 
 | Resource | What it is |
 |----------|------------|
-| [`requirements.txt`](requirements.txt) | Runtime dependencies (`numpy`, `pandas`, `obp`, `scikit-learn`, …) |
-| [`src/synthetic/F-OPE/conf.py`](src/synthetic/F-OPE/conf.py) | F-OPE synthetic hyperparameters & estimator flags |
-| [`src/synthetic/F-OPL/conf.py`](src/synthetic/F-OPL/conf.py) | F-OPL synthetic hyperparameters & learner flags |
-| [`src/real/F-OPL/conf.py`](src/real/F-OPL/conf.py) | KuaiRec / real-data experiment settings |
-| Notebooks under `src/synthetic/{F-OPE,F-OPL}/` | Paper §4 synthetic sweeps |
-| [`src/real/F-OPL/main.ipynb`](src/real/F-OPL/main.ipynb), [`main-opfv-tune-phi.ipynb`](src/real/F-OPL/main-opfv-tune-phi.ipynb) | Real-data runs (KuaiRec) |
+| [`pyproject.toml`](pyproject.toml) / [`uv.lock`](uv.lock) | Dependencies & reproducible resolve (`uv`) |
+| [`src/opfv/conf/`](src/opfv/conf/) | **Hydra** defaults: `domain/*.yaml`, `experiment/*.yaml` |
+| [`src/opfv/run.py`](src/opfv/run.py) | CLI entry: `python -m opfv.run` |
+| [`src/opfv/domain/`](src/opfv/domain/) | Shared estimators, synthetic bandit simulator, OBP-compat helpers |
+| [`src/opfv/experiments/`](src/opfv/experiments/) | **All** Hydra experiments (synthetic OPE/OPL and real KuaiRec) |
+| [`src/opfv/synthetic_fopl/`](src/opfv/synthetic_fopl/) | Synthetic **OPFV-PG** learners + `SyntheticFOPLSettings` (explicit Hydra → dataclass; no global `conf`) |
+| [`src/opfv/kuairec_fopl/`](src/opfv/kuairec_fopl/) | **KuaiRec** F-OPL stack (same package tier as `synthetic_fopl/`); defaults in `conf.py`, overrides from Hydra `kuairec.*` |
 
 ---
 
-## Installation & quick start
+## Installation & quick start ([uv](https://docs.astral.sh/uv/))
 
 ```bash
-git clone https://github.com/<your-github>/OPFV.git   # replace with your public URL
+git clone https://github.com/<your-github>/OPFV.git
 cd OPFV
-python3.8 -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-pip install jupyter
+uv sync --all-extras
 ```
 
-**Smoke check:** open any notebook under `src/synthetic/F-OPE/`, run the first few cells that build data and estimators. Imports assume the notebook’s **directory** is on the import path (open Jupyter with that folder as cwd, or `cd` there before `jupyter notebook`).
+**Run an experiment** (from repo root; Hydra `chdir`s to its output dir):
+
+```bash
+uv run python -m opfv.run experiment=synthetic_ope_target_time
+# CI / smoke:
+uv run python -m opfv.run experiment=quick_synthetic_ope
+```
+
+**Override config** (examples):
+
+```bash
+uv run python -m opfv.run domain=synthetic_opl_base experiment=synthetic_opl_time_at_eval
+uv run python -m opfv.run domain=kuairec_base experiment=real_kuairec_tune_phi kuairec.root=/path/to/KuaiRec/
+```
+
+**Tests & lint:**
+
+```bash
+uv run pytest
+uv run pytest -m slow   # short end-to-end synthetic OPE
+uv run ruff check src/opfv tests && uv run mypy src/opfv
+```
 
 ---
 
-## Notebook workflow (no CLI entrypoint)
+## Docker
 
-Unlike Hydra-driven repos, experiments are **notebook-first**: each directory is a small “lab” with `conf.py` + local modules (`ope.py`, `opl.py`, `estimators_time.py`, …).
+```bash
+docker build -t opfv:local .
+docker run --rm -v "$(pwd)/results:/app/results" opfv:local
+```
 
-**Convention**
-
-1. `cd` to the notebook’s directory (e.g. `src/synthetic/F-OPE`).
-2. Start Jupyter from that directory so `import conf` resolves.
-3. Toggle flags and lists in `conf.py` for sweeps; notebooks orchestrate loops and plots.
-
-There is **no** bundled `Dockerfile` in this tree; reproduce via the pinned stack in `requirements.txt` and the Python version above.
+Override the Hydra experiment by appending arguments after the image name. See [`docker-compose.yml`](docker-compose.yml) for a volume layout example.
 
 ---
 
 ## Experiment index (synthetic)
 
-| Question | Notebook |
-|----------|----------|
-| OPFV vs target future time | [`src/synthetic/F-OPE/main_target_time.ipynb`](src/synthetic/F-OPE/main_target_time.ipynb) |
-| Time-feature strength (λ) | [`src/synthetic/F-OPE/main_lambda.ipynb`](src/synthetic/F-OPE/main_lambda.ipynb) |
-| Number of time features | [`src/synthetic/F-OPE/main_num_time_feature.ipynb`](src/synthetic/F-OPE/main_num_time_feature.ipynb) |
-| Logged data size | [`src/synthetic/F-OPE/main_n_trains.ipynb`](src/synthetic/F-OPE/main_n_trains.ipynb) |
-| OPFV-PG vs evaluation time | [`src/synthetic/F-OPL/main_time_at_evaluation.ipynb`](src/synthetic/F-OPL/main_time_at_evaluation.ipynb) |
-| OPFV-PG vs training size | [`src/synthetic/F-OPL/main_n_trains.ipynb`](src/synthetic/F-OPL/main_n_trains.ipynb) |
+| Question | Hydra `experiment=` |
+|----------|---------------------|
+| OPFV vs target future time | `synthetic_ope_target_time` |
+| Time-feature strength (λ) | `synthetic_ope_lambda` |
+| Number of time features | `synthetic_ope_num_time_feature` |
+| Logged data size | `synthetic_ope_n_trains` |
+| OPFV-PG vs evaluation time | `synthetic_opl_time_at_eval` |
+| OPFV-PG vs training size | `synthetic_opl_n_trains` |
 
-**Extra F-OPL sweeps:** [`main_lambda_.ipynb`](src/synthetic/F-OPL/main_lambda_.ipynb), [`main_num_time_feature.ipynb`](src/synthetic/F-OPL/main_num_time_feature.ipynb).
+**Extra F-OPL sweeps:** `synthetic_opl_lambda`, `synthetic_opl_num_time_feature` (see `src/opfv/conf/experiment/`).
 
 ---
 
 ## Real data (KuaiRec)
 
-Download **[KuaiRec](https://kuairec.com/)** and place files under `KuaiRec/data/` (e.g. `big_matrix.csv`, `small_matrix.csv`, `user_features.csv`, plus the other CSVs from the dataset). Then run [`src/real/F-OPL/main.ipynb`](src/real/F-OPL/main.ipynb) and [`main-opfv-tune-phi.ipynb`](src/real/F-OPL/main-opfv-tune-phi.ipynb), adjusting paths inside the notebooks if your layout differs.
+Download **[KuaiRec](https://kuairec.com/)** and place files under `KuaiRec/data/`. Run with Hydra (set `kuairec.root` or `KUAIREC_ROOT`) and `experiment=real_kuairec_tune_phi` via `python -m opfv.run`. Optional exploratory notebook: [`notebooks/kuairec_F-OPL_main.ipynb`](notebooks/kuairec_F-OPL_main.ipynb) (imports `opfv.kuairec_fopl`; run Jupyter from repo root with `PYTHONPATH=src` or an editable install).
 
 ---
 
 ## Repository layout (mental model)
 
 ```
-src/
-├── synthetic/
-│   ├── F-OPE/     # future OPE, baselines vs OPFV
-│   └── F-OPL/     # future OPL / policy-gradient variants
-└── real/
-    └── F-OPL/     # KuaiRec experiments, φ tuning
+src/opfv/           # installable package
+├── experiments/    # Hydra runners (synthetic + KuaiRec)
+├── synthetic_fopl/
+├── kuairec_fopl/
+├── domain/, pipelines/, conf/, …
+notebooks/          # optional KuaiRec Jupyter workflow (not required for CLI)
 ```
 
-**Stacking:** [Open Bandit Pipeline (OBP)](https://github.com/st-tech/zr-obp) supplies bandit feedback types and standard OPE building blocks; this codebase adds **time-structured** futures, OPFV weights, and experiment-specific learners. No separate `pip install opfv` package—run from source as above.
+**Stacking:** [Open Bandit Pipeline (OBP)](https://github.com/st-tech/zr-obp) supplies bandit feedback types and standard OPE building blocks; this codebase adds **time-structured** futures, OPFV weights, and experiment-specific learners. Install with `uv sync` (editable local package).
 
 ---
 
 ## Results
 
-Figures and tables in the paper map to the notebooks listed here. This README does not duplicate numeric results; regenerate plots from the corresponding notebooks after installs.
+Figures and tables in the paper map to the experiments above. CSV summaries are written under `results/<experiment_name>/df/` (relative to Hydra’s run directory unless overridden). This README does not duplicate numeric results.
 
 ---
 

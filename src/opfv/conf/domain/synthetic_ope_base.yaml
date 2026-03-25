@@ -1,0 +1,48 @@
+# @package _global_
+# Shared synthetic F-OPE defaults (paper §4; formerly standalone F-OPE conf.py)
+synthetic:
+  n_seeds_for_time_eval_sampling: 20
+  n_seeds: 20
+  num_val: 1000
+  n_rounds_list: [500, 1000, 2000, 4000]
+  lambda_ratio_list: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+  num_time_at_evaluation: 8
+  candidate_num_time_structure_list: [2, 4, 6, 8, 10, 12, 14, 16]
+  candidate_num_time_structure_list_for_OPFV: [2, 4, 6, 8, 10, 12, 14, 16]
+  reward_std: 1
+  n_seeds_all: 5
+  num_test: 10000
+  num_overlaps: 1
+  num_cycles_in_evaluation_period: 1
+  num_time_structure_for_logged_data: 8
+  num_true_time_structure_for_OPFV_reward: 8
+  num_episodes_for_Prognosticator: 8
+  num_features_for_Prognosticator: 3
+  num_features_for_Prognosticator_list: [3, 5, 7]
+  flag_Prognosticator_optimality: true
+  flag_include_DM: false
+  flag_calculate_data_driven_OPFV: true
+  flag_Prognosticator_with_multiple_feature_func: false
+  sample_non_stationary_context: false
+  p_1_coef: 3
+  p_2_coef: 1
+  n_actions: 10
+  dim_context: 10
+  n_users: null
+  beta: 0.1
+  alpha_ratio: 0.5
+  lambda_ratio: 0.5
+  beta_list: [-0.4, -0.2, 0, 0.2, 0.4]
+  eps_list: [0.05, 0.1, 0.15, 0.2, 0.25]
+  flag_simple_reward: true
+  g_coef: 3
+  h_coef: 1
+  random_state: 12345
+  eps: 0.2
+  t_now_iso: "2022-12-31T23:59:59"
+  t_oldest_iso: "2022-01-01T00:00:00"
+  time_at_evaluation_iso: "2023-01-01T00:00:00"
+  t_future_iso: "2024-01-01T00:00:00"
+
+phi_pairs:
+  - fourier

@@ -1,0 +1,18 @@
+defaults:
+  - domain: synthetic_ope_base
+  - experiment: synthetic_ope_target_time
+  - _self_
+
+hydra:
+  run:
+    dir: outputs/${now:%Y-%m-%d_%H-%M-%S}
+  sweep:
+    dir: multirun/${now:%Y-%m-%d_%H-%M-%S}
+  job:
+    chdir: true
+
+logging:
+  level: INFO
+
+paths:
+  output_subdir: results

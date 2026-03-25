@@ -1,0 +1,62 @@
+# @package _global_
+# Shared synthetic F-OPL defaults (paper §4; pairs with opfv.synthetic_fopl)
+synthetic:
+  max_iter: 25
+  batch_size: 32
+  num_time_learn: 50
+  n_seeds: 20
+  num_train: 8000
+  num_train_list: [1000, 2000, 4000, 8000]
+  lambda_ratio_list: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+  num_time_at_evaluation: 8
+  candidate_num_time_structure_list: [2, 3, 4, 5, 6, 7, 8]
+  candidate_num_time_structure_list_for_OPFV: [2, 4, 6, 8, 10, 12, 14, 16]
+  reward_std: 1
+  num_test: 10000
+  alpha_ratio_list: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+  alpha_ratio_and_lambda_ratio_list: [0.0, 0.2, 0.4, 0.6, 0.8, 1.0]
+  num_overlaps: 1
+  num_time_structure_for_logged_data: 8
+  num_cycles_in_evaluation_period: 1
+  num_true_time_structure_for_OPFV_reward: 8
+  num_episodes_for_Prognosticator: 8
+  num_features_for_Prognosticator: 3
+  num_features_for_Prognosticator_list: [3, 5, 7]
+  flag_Prognosticator_optimality: true
+  flag_Prognosticator_with_multiple_feature_func: false
+  flag_include_DM: false
+  flag_calculate_data_driven_OPFV: true
+  flag_plot_loss: false
+  flag_plot_value: false
+  flag_include_behavior_policy: false
+  flag_include_best_policy: false
+  flag_include_RegBased: true
+  flag_include_IPS_PG: true
+  flag_include_DR_PG: true
+  flag_include_Prognosticator: true
+  sample_non_stationary_context: false
+  p_1_coef: 3
+  p_2_coef: 1
+  beta_list: [-3, -1, 0, 1, 3]
+  n_actions_list: [5, 10, 20, 40]
+  dim_context_list: [5, 10, 20, 40]
+  num_time_learn_list: [10, 20, 40, 80]
+  n_users_list: [50, 100, 200, 400]
+  beta: 0.1
+  alpha_ratio: 0.5
+  lambda_ratio: 0.5
+  n_actions: 10
+  dim_context: 10
+  n_users: null
+  flag_simple_reward: true
+  g_coef: 3
+  h_coef: 1
+  random_state: 12345
+  eps: 0
+  t_now_iso: "2022-12-31T23:59:59"
+  t_oldest_iso: "2022-01-01T00:00:00"
+  time_at_evaluation_start_iso: "2023-01-01T00:00:00"
+  t_future_iso: "2024-01-01T00:00:00"
+
+phi_pairs:
+  - fourier

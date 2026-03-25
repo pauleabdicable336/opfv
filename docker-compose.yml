@@ -1,0 +1,11 @@
+services:
+  opfv:
+    build: .
+    volumes:
+      - ./outputs:/app/outputs
+      - ./results:/app/results
+      # Optional: mount KuaiRec CSV root read-only
+      # - ${KUAIREC_ROOT:-../KuaiRec}:/data/KuaiRec:ro
+    environment:
+      - KUAIREC_ROOT=/data/KuaiRec
+    command: ["uv", "run", "python", "-m", "opfv.run", "experiment=quick_synthetic_ope"]

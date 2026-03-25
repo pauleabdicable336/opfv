@@ -1,0 +1,13 @@
+# @package _global_
+# Tiny sweep for CI / Docker smoke (not for paper figures).
+# Numeric overrides only; time ISO fields come from domain/synthetic_ope_base.
+name: quick_synthetic_ope
+sweep: target_time
+
+synthetic:
+  n_seeds_all: 1
+  n_seeds: 1
+  n_seeds_for_time_eval_sampling: 1
+  num_val: 64
+  num_test: 64
+  num_time_at_evaluation: 2

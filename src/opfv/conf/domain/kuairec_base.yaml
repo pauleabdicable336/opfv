@@ -1,0 +1,14 @@
+# @package _global_
+# Real-data KuaiRec F-OPL defaults (paths overridable via CLI)
+kuairec:
+  root: ${oc.env:KUAIREC_ROOT,../../../../KuaiRec/}
+  n_seeds: 10
+  random_state: 12345
+  n_actions: 100
+  dim_context: 60
+  dim_action_context: 40
+  max_iter: 25
+  batch_size: 1024
+  num_time_learn: 10
+  learning_rate: 0.005
+  solver: adam
