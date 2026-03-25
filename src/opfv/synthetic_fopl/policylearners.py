@@ -43,8 +43,8 @@ def convert_unix_time_to_num_time_structures_after_the_oldest_time(
     t_oldest: int,
     num_time_structures_in_a_year: int,
 ):
-    unix_time_datetime = datetime.datetime.utcfromtimestamp(unix_time)
-    t_oldest_datetime = datetime.datetime.utcfromtimestamp(t_oldest)
+    unix_time_datetime = datetime.datetime.fromtimestamp(float(unix_time), tz=datetime.UTC)
+    t_oldest_datetime = datetime.datetime.fromtimestamp(float(t_oldest), tz=datetime.UTC)
 
     elapsed_time = unix_time_datetime - t_oldest_datetime
 
@@ -203,7 +203,9 @@ class GradientBasedPolicyLearner:
     evaluation_rate_init: float = 0.01
     alpha: float = 1e-6  # weight decay used in optimizer
     imit_reg: float = 0.0  #### this is the different param from RegBased
-    log_eps: float = 1e-10  # to calculate the log the input of the log should not be zero so engineering trick
+    log_eps: float = (
+        1e-10  # to calculate the log the input of the log should not be zero so engineering trick
+    )
     solver: str = "adagrad"
     max_iter: int = 50  # number of epochs
     random_state: int = 12345
@@ -383,7 +385,9 @@ class Prognosticator:
     evaluation_rate_init: float = 0.01
     alpha: float = 1e-6  # weight decay used in optimizer
     imit_reg: float = 0.0
-    log_eps: float = 1e-10  # to calculate the log the input of the log should not be zero so engineering trick
+    log_eps: float = (
+        1e-10  # to calculate the log the input of the log should not be zero so engineering trick
+    )
     solver: str = "adagrad"
     max_iter: int = 50  # number of epochs
     random_state: int = 12345
@@ -419,9 +423,7 @@ class Prognosticator:
                 num_time_structures_in_a_year=self.settings.num_time_structure_for_logged_data,
             )
         )
-        self.max_num_time_structures_after_t_oldest = int(
-            max_num_time_structures_after_t_oldest
-        )
+        self.max_num_time_structures_after_t_oldest = int(max_num_time_structures_after_t_oldest)
         self.K = self.settings.num_episodes_for_Prognosticator
 
         # Define the model
@@ -671,9 +673,7 @@ class Prognosticator:
         t_cloned_feature_context = np.eye(self.max_num_time_structures_after_t_oldest)[
             t_cloned_feature - 1
         ]
-        t_cloned_feature_context = torch.tensor(
-            t_cloned_feature_context, dtype=torch.float32
-        )
+        t_cloned_feature_context = torch.tensor(t_cloned_feature_context, dtype=torch.float32)
         input_for_nn_model = torch.cat((x, t_cloned_feature_context), dim=1)
         input_for_nn_model = input_for_nn_model.to(dtype=torch.float32)
         return self.nn_model(input_for_nn_model).detach().numpy()
@@ -690,7 +690,9 @@ class OPFVPolicyLearner:
     evaluation_rate_init: float = 0.01
     alpha: float = 1e-6  # weight decay used in optimizer
     imit_reg: float = 0.0
-    log_eps: float = 1e-10  # to calculate the log the input of the log should not be zero so engineering trick
+    log_eps: float = (
+        1e-10  # to calculate the log the input of the log should not be zero so engineering trick
+    )
     solver: str = "adagrad"
     max_iter: int = 50  # number of epochs
     random_state: int = 12345
@@ -795,12 +797,8 @@ class OPFVPolicyLearner:
                 t_test_sampled_normalized = normalize_time_by_t_oldest_and_future(
                     t_test_sampled, self.settings
                 )
-                phi_scalar_func_for_OPFV_vectorized = np.vectorize(
-                    self.phi_scalar_func_for_OPFV
-                )
-                time_structure_t_test_sampled = phi_scalar_func_for_OPFV_vectorized(
-                    t_test_sampled
-                )
+                phi_scalar_func_for_OPFV_vectorized = np.vectorize(self.phi_scalar_func_for_OPFV)
+                time_structure_t_test_sampled = phi_scalar_func_for_OPFV_vectorized(t_test_sampled)
                 t_test_sampled = torch.tensor(t_test_sampled)
                 n = x.shape[0]
                 m = t_test_sampled_normalized.shape[0]
@@ -819,9 +817,7 @@ class OPFVPolicyLearner:
                     ),
                     axis=2,
                 )
-                input_for_nn_model = torch.tensor(
-                    input_for_nn_model, dtype=torch.float32
-                )
+                input_for_nn_model = torch.tensor(input_for_nn_model, dtype=torch.float32)
                 input_for_nn_model = input_for_nn_model.view(
                     n * m, dim_x + self.num_time_structure_for_OPFV_reward
                 )
@@ -905,16 +901,10 @@ class OPFVPolicyLearner:
         log_pi_ai_xi_tj = torch.log(pi + self.log_eps)
         log_pi_ai_xi_tj_factual = log_pi_ai_xi_tj[:, idx, a]
         phi_vector_func_for_reward = np.vectorize(self.phi_scalar_func_for_OPFV)
-        time_structure_for_reward_test = torch.tensor(
-            phi_vector_func_for_reward(t_test_sampled)
-        )
+        time_structure_for_reward_test = torch.tensor(phi_vector_func_for_reward(t_test_sampled))
         time_structure_for_reward_train = torch.tensor(phi_vector_func_for_reward(t))
-        time_structure_for_reward_test_unsqueezed = (
-            time_structure_for_reward_test.unsqueeze(0)
-        )
-        time_structure_for_reward_train_unsqueezed = (
-            time_structure_for_reward_train.unsqueeze(1)
-        )
+        time_structure_for_reward_test_unsqueezed = time_structure_for_reward_test.unsqueeze(0)
+        time_structure_for_reward_train_unsqueezed = time_structure_for_reward_train.unsqueeze(1)
 
         indicator_phi_r_matrix = (
             (
@@ -944,12 +934,8 @@ class OPFVPolicyLearner:
             t_test_sampled_normalized = normalize_time_by_t_oldest_and_future(
                 t_test_sampled, self.settings
             )
-            t_test_sampled_vec_normalized = torch.full(
-                (a.shape[0],), t_test_sampled_normalized[0]
-            )
-            f_xi_tj_ai = self.reg_model_time.predict(
-                context=x, time=t_test_sampled_vec_normalized
-            )
+            t_test_sampled_vec_normalized = torch.full((a.shape[0],), t_test_sampled_normalized[0])
+            f_xi_tj_ai = self.reg_model_time.predict(context=x, time=t_test_sampled_vec_normalized)
         else:
             t_test_sampled_normalized_augmented = np.tile(t_test_sampled, (n, 1)).T
             t_test_sampled_normalized_augmented = np.expand_dims(
@@ -979,12 +965,8 @@ class OPFVPolicyLearner:
         x = torch.from_numpy(dataset_test["context"]).float()
         t = torch.from_numpy(dataset_test["time"]).float()
         t_cloned2 = t.clone()
-        one_of_the_inputs2 = t_cloned2.apply_(self.phi_scalar_func_for_OPFV).to(
-            dtype=torch.int32
-        )
-        one_of_the_inputs2 = np.eye(self.num_time_structure_for_OPFV_reward)[
-            one_of_the_inputs2
-        ]
+        one_of_the_inputs2 = t_cloned2.apply_(self.phi_scalar_func_for_OPFV).to(dtype=torch.int32)
+        one_of_the_inputs2 = np.eye(self.num_time_structure_for_OPFV_reward)[one_of_the_inputs2]
         one_of_the_inputs2 = torch.tensor(one_of_the_inputs2)
         input_for_nn_model = torch.cat((x, one_of_the_inputs2), dim=1)
         input_for_nn_model = input_for_nn_model.to(dtype=torch.float32)

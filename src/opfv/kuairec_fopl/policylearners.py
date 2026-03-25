@@ -38,8 +38,8 @@ NUM_UNIQUE_DAY_OFF_OR_NOR = 2
 def convert_unix_time_to_num_time_structures_after_the_oldest_time(
     unix_time, t_oldest, num_time_structures_in_a_week
 ):
-    unix_time_datetime = datetime.datetime.utcfromtimestamp(unix_time)
-    t_oldest_datetime = datetime.datetime.utcfromtimestamp(t_oldest)
+    unix_time_datetime = datetime.datetime.fromtimestamp(float(unix_time), tz=datetime.UTC)
+    t_oldest_datetime = datetime.datetime.fromtimestamp(float(t_oldest), tz=datetime.UTC)
 
     elapsed_time = unix_time_datetime - t_oldest_datetime
 

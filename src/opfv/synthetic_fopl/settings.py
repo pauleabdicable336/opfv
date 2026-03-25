@@ -90,7 +90,9 @@ class SyntheticFOPLSettings:
             num_train_list=tuple(int(x) for x in s.num_train_list),
             lambda_ratio_list=tuple(float(x) for x in s.lambda_ratio_list),
             num_time_at_evaluation=int(s.num_time_at_evaluation),
-            candidate_num_time_structure_list=tuple(int(x) for x in s.candidate_num_time_structure_list),
+            candidate_num_time_structure_list=tuple(
+                int(x) for x in s.candidate_num_time_structure_list
+            ),
             candidate_num_time_structure_list_for_OPFV=tuple(
                 int(x) for x in s.candidate_num_time_structure_list_for_OPFV
             ),

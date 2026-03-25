@@ -181,16 +181,22 @@ def show_hyperparameters(
     logger.info("################# START hyperparameters (F-OPL) #################")
     logger.info("n_seeds=%s num_train=%s num_test=%s", st.n_seeds, st.num_train, st.num_test)
     logger.info("|C_r|=%s lambda=%s", st.num_time_structure_for_logged_data, st.lambda_ratio)
-    logger.info("OPL epochs=%s batch=%s num_time_learn=%s", st.max_iter, st.batch_size, st.num_time_learn)
+    logger.info(
+        "OPL epochs=%s batch=%s num_time_learn=%s", st.max_iter, st.batch_size, st.num_time_learn
+    )
     logger.info("Prognosticator phi=%s", st.phi_scalar_func_list)
-    logger.info("t_oldest=%s t_now=%s t_future=%s",
+    logger.info(
+        "t_oldest=%s t_now=%s t_future=%s",
         datetime.datetime.fromtimestamp(st.t_oldest),
         datetime.datetime.fromtimestamp(st.t_now),
-        datetime.datetime.fromtimestamp(st.t_future))
+        datetime.datetime.fromtimestamp(st.t_future),
+    )
     if flag_show_time_at_evaluation and time_at_evaluation_start is not None:
-        logger.info("eval window start=%s end=%s",
+        logger.info(
+            "eval window start=%s end=%s",
             datetime.datetime.fromtimestamp(time_at_evaluation_start),
-            datetime.datetime.fromtimestamp(time_at_evaluation_end))
+            datetime.datetime.fromtimestamp(time_at_evaluation_end),
+        )
     logger.info("|A|=%s d_x=%s beta=%s eps=%s", st.n_actions, st.dim_context, st.beta, st.eps)
     logger.info("num_train_list=%s lambda_list=%s", st.num_train_list, st.lambda_ratio_list)
     if not flag_show_time_at_evaluation and time_at_evaluation_list is not None:

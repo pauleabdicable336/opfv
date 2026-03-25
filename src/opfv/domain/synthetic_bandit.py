@@ -20,6 +20,11 @@ BIG_NUM = int(1e5)
 NUM_DAY_OF_WEEK = 7
 
 
+def _datetime_utc_from_timestamp(timestamp: float | np.floating | int) -> datetime.datetime:
+    """Unix seconds → aware UTC datetime (avoids deprecated ``utcfromtimestamp`` in vectorized paths)."""
+    return datetime.datetime.fromtimestamp(float(timestamp), tz=datetime.UTC)
+
+
 coef_func_signature = Callable[
     [np.ndarray, np.ndarray, np.random.RandomState],
     Tuple[np.ndarray, np.ndarray, np.ndarray],
@@ -426,8 +431,8 @@ class SyntheticBanditWithTimeDataset(BaseBanditDataset):
     def synthesize_expected_reward(self, contexts, times):
         n_rounds = contexts.shape[0]
 
-        # Convert Unix timestamp to a datetime object
-        finer_time_structure_func = np.vectorize(datetime.datetime.utcfromtimestamp)
+        # Convert Unix timestamp to a datetime object (UTC-aware; NumPy may call this many times)
+        finer_time_structure_func = np.vectorize(_datetime_utc_from_timestamp)
         dt_objects = finer_time_structure_func(times)
 
         # Assuming dt_objects is a NumPy array of datetime objects

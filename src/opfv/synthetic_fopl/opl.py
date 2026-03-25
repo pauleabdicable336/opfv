@@ -63,11 +63,7 @@ def OPL(
     # Derive the value V(pi_b) of the logging policy pi_b
     # by using the logging policy pi_b and
     # the true expected reward q(x, a)
-    pi_0_value = (
-        (dataset_test["expected_reward"] * np.squeeze(dataset_test["pi_b"]))
-        .sum(1)
-        .mean()
-    )
+    pi_0_value = (dataset_test["expected_reward"] * np.squeeze(dataset_test["pi_b"])).sum(1).mean()
 
     if st.flag_include_behavior_policy == True:
         true_value_of_learned_policies["behavior"] = pi_0_value
@@ -167,9 +163,7 @@ def OPL(
 
     if st.flag_include_Prognosticator == True:
         true_value_candidate_list_for_Prognosticator = []
-        for (
-            num_features_for_Prognosticator
-        ) in st.num_features_for_Prognosticator_list:
+        for num_features_for_Prognosticator in st.num_features_for_Prognosticator_list:
             for i in range(len(st.phi_scalar_func_list)):
                 prog = Prognosticator(
                     settings=st,
@@ -179,12 +173,8 @@ def OPL(
                     batch_size=batch_size,
                     true_num_time_structures=st.num_time_structure_for_logged_data,
                     num_features_for_Prognosticator=st.num_time_structure_for_logged_data,
-                    time_feature_func_for_Prognosticator_scalar=st.phi_scalar_func_list[
-                        i
-                    ],
-                    time_feature_func_for_Prognosticator_vec=st.phi_vector_func_list[
-                        i
-                    ],
+                    time_feature_func_for_Prognosticator_scalar=st.phi_scalar_func_list[i],
+                    time_feature_func_for_Prognosticator_vec=st.phi_vector_func_list[i],
                     num_parameters=num_features_for_Prognosticator,
                     t_oldest=st.t_oldest,
                     t_now=st.t_now,
@@ -245,9 +235,7 @@ def OPL(
     )
 
     def phi_scalar_func_for_OPFV(unix_time):
-        return unix_time_to_time_structure_n_tree(
-            unix_time, num_time_structure_for_OPFV_reward
-        )
+        return unix_time_to_time_structure_n_tree(unix_time, num_time_structure_for_OPFV_reward)
 
     # Vectorize the phi function
     phi_vector_func = np.vectorize(phi_scalar_func_for_OPFV)
@@ -284,9 +272,7 @@ def OPL(
 
     # # Calculate the estimated expected reward \hat{q}(x, a)
 
-    opfv_opl.fit(
-        dataset=dataset_train, dataset_test=dataset_test, q_hat=hat_g_x_phi_t_a
-    )
+    opfv_opl.fit(dataset=dataset_train, dataset_test=dataset_test, q_hat=hat_g_x_phi_t_a)
 
     pi_opfv = opfv_opl.predict(dataset_test)
 
